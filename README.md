@@ -407,6 +407,20 @@ pipeline_health
                  └──────────────────────────┘
 ```
 
+## Mapping to a Production Lakehouse
+
+This take-home uses PostgreSQL to keep the local environment simple and reproducible. The same Raw → Silver → Gold architecture could be mapped to a production lakehouse without changing the logical data flow.
+
+- **Raw:** crawler outputs would be written to object storage such as Amazon S3 in an append-only format, preserving the original payload and ingestion metadata.
+- **Silver:** dbt would transform Raw data into cleaned and conformed Iceberg or Delta tables, including price parsing, unit normalisation, deduplication, and product matching.
+- **Gold:** dimensional models and analytical tables would also be stored as managed Iceberg or Delta tables and exposed to the dashboard, recommendation process, and API through a query engine or warehouse.
+
+PostgreSQL schemas in this project therefore represent the logical lakehouse layers:
+
+`raw schema → silver schema → gold schema`
+
+In a production implementation, I would also add partitioning by observation date, catalogue/version management, automated data-quality monitoring, and orchestration around ingestion and transformation.
+
 ### Fact Grains
 
 `fct_product_price_daily`
