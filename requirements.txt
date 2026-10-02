@@ -1,0 +1,11 @@
+beautifulsoup4
+pydantic
+pydantic-settings
+requests
+psycopg2-binary
+pandas
+pytest
+fastapi
+uvicorn
+dbt-core==1.10.15
+dbt-postgres==1.10.0

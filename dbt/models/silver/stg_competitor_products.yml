@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: stg_competitor_products
+    description: Cleaned competitor product observations.
+
+    columns:
+      - name: raw_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: platform
+        data_tests:
+          - not_null
+
+      - name: product_name
+        data_tests:
+          - not_null
+
+      - name: price
+        data_tests:
+          - not_null
+
+      - name: currency
+        data_tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['IDR']
+
+      - name: observed_date
+        data_tests:
+          - not_null

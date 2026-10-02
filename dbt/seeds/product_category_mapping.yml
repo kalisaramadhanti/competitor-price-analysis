@@ -1,0 +1,13 @@
+version: 2
+
+seeds:
+  - name: product_category_mapping
+    columns:
+      - name: product_matching_key
+        data_tests:
+          - unique
+          - not_null
+
+      - name: category
+        data_tests:
+          - not_null

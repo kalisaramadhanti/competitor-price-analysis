@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: dim_product_master
+    description: >
+      Canonical product dimension combining equivalent
+      marketplace listings using normalised product names.
+
+    columns:
+      - name: product_id
+        description: Deterministic product identifier.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: product_matching_key
+        description: Normalised product name used for matching.
+        data_tests:
+          - unique
+          - not_null
+
+      - name: canonical_product_name
+        data_tests:
+          - not_null
+
+      - name: brand
+        data_tests:
+          - not_null
+
+      - name: category
+        data_tests:
+          - not_null
+
+      - name: platform_count
+        data_tests:
+          - not_null

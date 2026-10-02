@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: dim_platform
+    description: Unique platforms represented in competitor pricing data.
+
+    columns:
+      - name: platform_id
+        data_tests:
+          - unique
+          - not_null
+
+      - name: platform_name
+        data_tests:
+          - unique
+          - not_null

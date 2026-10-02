@@ -1,0 +1,76 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: competitor_postgres
+    environment:
+      POSTGRES_DB: competitor_prices
+      POSTGRES_USER: analyst
+      POSTGRES_PASSWORD: analyst
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U analyst -d competitor_prices"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pipeline:
+    build: .
+    container_name: competitor_pipeline
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: competitor_prices
+      POSTGRES_USER: analyst
+      POSTGRES_PASSWORD: analyst
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: >
+      sh -c "
+        ./scripts/run_ingestion.sh &&
+        dbt seed --project-dir dbt --profiles-dir dbt &&
+        dbt build --project-dir dbt --profiles-dir dbt &&
+        python -m recommendation.main
+      "
+
+  api:
+    build: .
+    container_name: competitor_api
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: competitor_prices
+      POSTGRES_USER: analyst
+      POSTGRES_PASSWORD: analyst
+      READER_API_KEY: dev-reader-key
+      ADMIN_API_KEY: dev-admin-key
+    ports:
+      - "8000:8000"
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+    command: >
+      uvicorn api.main:app
+      --host 0.0.0.0
+      --port 8000
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: competitor_metabase
+    environment:
+      MB_DB_FILE: /metabase-data/metabase.db
+    ports:
+      - "3000:3000"
+    volumes:
+      - metabase_data:/metabase-data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  metabase_data:

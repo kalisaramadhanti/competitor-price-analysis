@@ -1,0 +1,66 @@
+{{ config(materialized='table') }}
+
+WITH competitor_prices AS (
+
+    SELECT
+        product_id,
+        date_id,
+        price
+
+    FROM {{ ref('fct_product_price_daily') }}
+),
+
+aggregated AS (
+
+    SELECT
+        product_id,
+        date_id,
+
+        COUNT(DISTINCT platform_id) AS platform_count,
+
+        PERCENTILE_CONT(0.5)
+            WITHIN GROUP (ORDER BY price)
+            AS competitor_median_price
+
+    FROM {{ ref('fct_product_price_daily') }}
+
+    GROUP BY
+        product_id,
+        date_id
+),
+
+recommendations AS (
+
+    SELECT
+        product_id,
+        date_id,
+        platform_count,
+
+        ROUND(
+            competitor_median_price::NUMERIC,
+            2
+        ) AS competitor_median_price,
+
+        CASE
+            WHEN platform_count >= 2
+            THEN ROUND(
+                (competitor_median_price * 0.95)::NUMERIC,
+                2
+            )
+        END AS recommended_price,
+
+        CASE
+            WHEN platform_count >= 2
+            THEN '95% of competitor median'
+            ELSE 'insufficient cross-platform coverage'
+        END AS recommendation_rule,
+
+        'rule_v1' AS model_version,
+
+        CURRENT_TIMESTAMP AS run_timestamp
+
+    FROM aggregated
+)
+
+SELECT *
+FROM recommendations

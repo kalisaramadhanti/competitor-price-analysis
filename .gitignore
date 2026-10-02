@@ -1,0 +1,33 @@
+# Environment / secrets
+.env
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+logs/
+*.log
+
+# dbt generated artifacts
+dbt/target/
+dbt/logs/
+dbt_packages/
+dbt/.user.yml
+
+# Generated/local data
+data/*.jsonl
+
+# Temporary files
+*.tmp
+*.swp
