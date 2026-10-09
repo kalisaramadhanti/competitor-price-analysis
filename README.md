@@ -654,6 +654,38 @@ The dashboard reads from the Gold layer only.
 
 ---
 
+### Dashboard Preview
+
+The Metabase dashboard provides four views:
+- Competitor price comparison by product and platform
+- Discount trends across historical observation dates
+- Recommended prices versus competitor median prices
+- Pipeline health and data freshness
+
+![Competitor Price Analysis Dashboard](dashboard/screenshots/competitor_price_dashboard.png)
+
+The dashboard uses synthetic historical observations for
+demonstration purposes. Results should not be interpreted
+as actual historical competitor pricing.
+
+### dbt Lineage
+
+The dbt lineage graph illustrates how raw competitor observations
+flow through Silver staging and normalisation into Gold
+dimensions, facts, and analytical models.
+
+![dbt Lineage Graph](docs/dbt_lineage.png)
+
+The recommendation batch is implemented in Python and writes
+to `gold.fct_price_recommendation` outside dbt.
+
+### Business Analysis
+
+See [Business Summary](business_summary.md) for the four
+analytical questions, findings, recommendations, and
+limitations of the synthetic dataset.
+
+
 ## 15. Pipeline Health
 
 `gold.pipeline_health` exposes:

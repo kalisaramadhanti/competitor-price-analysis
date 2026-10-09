@@ -1,5 +1,6 @@
 version: 2
 
+
 models:
   - name: fct_product_price_daily
     description: >
@@ -9,11 +10,13 @@ models:
 
     columns:
       - name: price_observation_id
+        description: Unique identifier for a daily product-platform price observation.
         data_tests:
           - unique
           - not_null
 
       - name: product_id
+        description: Foreign key to the canonical product dimension.
         data_tests:
           - not_null
           - relationships:
@@ -22,6 +25,7 @@ models:
                 field: product_id
 
       - name: platform_id
+        description: Foreign key to the platform dimension.
         data_tests:
           - not_null
           - relationships:
@@ -30,6 +34,7 @@ models:
                 field: platform_id
 
       - name: date_id
+        description: Foreign key to the observation date dimension.
         data_tests:
           - not_null
           - relationships:
@@ -38,10 +43,12 @@ models:
                 field: date_id
 
       - name: price
+        description: Observed selling price in the specified currency.
         data_tests:
           - not_null
 
       - name: currency
+        description: Currency code for the observed price, currently IDR.
         data_tests:
           - accepted_values:
               arguments:
