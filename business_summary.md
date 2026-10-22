@@ -2,66 +2,81 @@
 
 ## Executive Summary
 
-This analysis demonstrates how competitor pricing data can be transformed into comparable pricing, discount, dispersion, and price-change metrics. The dataset used for this take-home is **synthetic** and was created to exercise the end-to-end pipeline; therefore, the findings below demonstrate analytical capability and should not be interpreted as actual historical pricing behaviour on Blibli or Tokopedia.
+This project develops an end-to-end competitor pricing intelligence pipeline to automate marketplace price collection, standardise product information, analyse competitive positioning, and generate indicative pricing recommendations.
 
-The analysis covers four Unilever products across two platforms and six observation dates, producing 48 daily price observations.
+Live product observations were collected from Blibli and Tokopedia, while KlikIndomaret was represented by a clearly labelled synthetic fixture after automated access was restricted.
 
-## 1. Which platform is cheapest on average?
+The latest verified pipeline results include:
 
-Blibli has the lower price index in the synthetic dataset.
+| Metric | Result |
+|---|---:|
+| Raw observations in PostgreSQL | 923 |
+| Blibli raw observations | 786 |
+| Tokopedia raw observations | 134 |
+| KlikIndomaret synthetic observations | 3 |
+| Gold price competitiveness records | 880 |
+| Product-date records evaluated for recommendations | 856 |
+| Valid indicative recommendations | 24 |
+| Records with insufficient platform coverage | 832 |
 
-| Platform | Comparable observations | Price index |
-|---|---:|---:|
-| Blibli | 24 | 98.80 |
-| Tokopedia | 24 | 101.20 |
+The results demonstrate the feasibility of automated competitor monitoring while highlighting the importance of product matching, data coverage, and pricing constraints.
 
-The index benchmarks each product-date price against the cross-platform average for the same product and date, where **100 represents the market benchmark**.
+## 1. Competitive Price Monitoring
 
-Across the 24 comparable product-date observations per platform, Blibli prices are therefore approximately **1.2% below the benchmark**, while Tokopedia prices are approximately **1.2% above it**.
+The pipeline transforms marketplace observations into comparable product-level pricing information across Blibli and Tokopedia.
 
-## 2. How deep and frequent are discounts?
+The analytical layer supports monitoring of:
 
-Hair Care products are discounted in **100% of observations on both platforms**, with an average discount depth of **12.67%** and a maximum observed discount of **17%**.
+- **Price competitiveness:** Identifying products priced above or below the cross-platform benchmark.
+- **Price dispersion:** Measuring price differences between marketplaces.
+- **Discount behaviour:** Comparing promotional intensity and observed discounts.
+- **Price movements:** Tracking changes between available observation dates.
 
-Personal Care shows greater platform variation. Tokopedia records discounts in **100% of observations**, averaging **12.00%**, compared with **83.33%** of observations and an average **7.80%** discount on Blibli.
+These indicators help pricing teams identify products that warrant further commercial review.
 
-Discount data is available for all observations in the synthetic dataset, so the calculated frequencies are not affected by missing discount fields.
+However, cross-platform comparisons are only meaningful when product identity, size, variant, and packaging are sufficiently consistent.
 
-## 3. Which products show the largest price dispersion?
+## 2. Price Recommendation Results
 
-**Lifebuoy Body Wash 500ml** has the largest observed cross-platform price dispersion.
+A transparent, rule-based pricing recommendation model was implemented using the cross-platform median price.
 
-The maximum difference is **Rp3,000**, equivalent to **7.41% of the cross-platform average price**, observed on both 31 August and 30 September.
+**Recommended Price = 95% × Competitor Median Price**
 
-**Dove Shampoo 340ml** also shows a recurring Rp2,000 cross-platform difference across several observation dates, representing approximately 4.3% of its average price.
+A recommendation is generated only when at least two platforms have valid observations for the same normalised product on the same date.
 
-This demonstrates how dispersion monitoring can identify products where competitor positioning differs most significantly.
+The latest recommendation batch evaluated **856 product-date records**, producing **24 indicative recommendations**. The remaining **832 records** did not meet the minimum cross-platform coverage requirement.
 
-## 4. How frequently do prices change?
+This conservative approach avoids generating recommendations from insufficient competitor evidence.
 
-Across periods where a previous price is available:
+The 5% reduction is a predefined pricing strategy assumption, not an empirically optimised discount.
 
-| Platform | Comparable periods | Price changes | Change frequency |
-|---|---:|---:|---:|
-| Blibli | 20 | 9 | 45.00% |
-| Tokopedia | 20 | 6 | 30.00% |
+## 3. Business Implications
 
-Blibli therefore exhibits more frequent price movement in this synthetic sample.
+The solution offers three potential business benefits:
 
-The day-of-week aggregation shows observed change frequencies of 50% on Monday, Wednesday, and Friday, 37.5% on Tuesday, and 0% on Sunday. However, **these figures should not be interpreted as evidence of a real weekday pricing pattern**.
+1. **Operational efficiency:** Reduces reliance on manual marketplace price monitoring through reusable ingestion and transformation pipelines.
+2. **Competitive visibility:** Provides a structured view of price positioning, discounts, and product-level pricing differences.
+3. **Decision support:** Identifies eligible pricing opportunities and produces explainable, indicative recommendations.
 
-The historical fixture is deliberately sparse and concentrated around month-end dates. Each represented weekday has only eight comparable observations, while Thursday has no comparable observations. A production analysis would require substantially denser daily observations before evaluating weekday behaviour.
+The limited recommendation coverage also reveals an important operational priority: improving matching accuracy and synchronising observations across platforms could increase the number of products eligible for reliable price comparison.
 
-## Business Implications
+The recommendation model should support human pricing decisions rather than automatically determine selling prices.
 
-The pipeline demonstrates how competitor monitoring can surface three useful signals: relative platform price positioning, promotional intensity, and products with unusually large cross-platform price gaps.
+## 4. Data Quality, Limitations and Next Steps
 
-In a production setting, these signals could support pricing teams in prioritising products for review rather than automatically determining prices. The accompanying recommendation model therefore remains intentionally simple and transparent: it recommends 95% of the cross-platform competitor median when sufficient platform coverage exists.
+Several limitations remain:
 
-The recommendation should not be treated as a production pricing decision because it does not currently incorporate cost, margin requirements, inventory, demand elasticity, or commercial strategy.
+- **Data provenance:** Historical Blibli and Tokopedia records were ingested before explicit source-status labels were introduced. Their provenance should be fully verified before production use.
+- **Restricted source access:** KlikIndomaret uses synthetic fixture data for technical demonstration, not actual observed market prices.
+- **Product matching:** Rule-based normalisation cannot guarantee identical variants, pack sizes, or promotional bundles across marketplaces.
+- **Observation coverage:** Differences in crawl dates and incomplete cross-platform matching restrict meaningful price comparisons.
+- **Commercial constraints:** Recommendations do not yet incorporate cost of goods sold, minimum margins, inventory, demand elasticity, or promotional strategy.
+- **Historical analysis:** The available observations do not establish robust long-term trends or seasonality.
 
-## Data Limitations
+With additional development time, priorities would include stronger product entity matching, scheduled incremental crawling, source-quality monitoring, margin-aware recommendations, and more comprehensive historical price coverage.
 
-All historical observations included in this repository are synthetic and intended for technical demonstration only. The sample contains four products, two platforms, and six observation dates. Product matching is rule-based, and the temporal sampling is insufficient for robust seasonality or weekday analysis.
+## Conclusion
 
-The analytical models are designed so that the same metrics can be applied to larger, real-world datasets once reliable marketplace observations are available.
+The project demonstrates a functioning end-to-end pricing intelligence architecture, from marketplace data collection and dbt dimensional modelling to analytical dashboards and rule-based price recommendations.
+
+Its main contribution is a reusable foundation for translating competitor observations into structured, explainable pricing insights. Further improvements in data coverage, product matching, and commercial constraints would be required before using its recommendations for operational pricing decisions.
