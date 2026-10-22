@@ -16,6 +16,7 @@ WITH ranked_prices AS (
         ) AS row_num
     FROM {{ ref('int_product_normalisation') }} s
     WHERE s.price > 0
+    AND COALESCE(s.data_source, 'unknown') <> 'synthetic'
 ),
 
 latest_prices AS (

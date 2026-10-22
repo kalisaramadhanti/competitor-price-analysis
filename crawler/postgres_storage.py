@@ -17,6 +17,7 @@ CREATE TABLE IF NOT EXISTS raw.competitor_products (
     original_price_raw TEXT,
     discount_raw TEXT,
     detail_raw TEXT,
+    seller_name TEXT,
     source_url TEXT NOT NULL,
     crawled_at TIMESTAMPTZ NOT NULL,
     crawler_version TEXT NOT NULL,
@@ -24,6 +25,9 @@ CREATE TABLE IF NOT EXISTS raw.competitor_products (
     html_hash TEXT NOT NULL,
     ingested_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE raw.competitor_products
+ADD COLUMN IF NOT EXISTS seller_name TEXT;
 
 CREATE INDEX IF NOT EXISTS idx_competitor_products_crawled_at
     ON raw.competitor_products (crawled_at);
@@ -38,6 +42,7 @@ INSERT_SQL = """
         original_price_raw,
         discount_raw,
         detail_raw,
+        seller_name,
         source_url,
         crawled_at,
         crawler_version,
@@ -68,6 +73,7 @@ def save_postgres(products, html_hash):
             obs["original_price_raw"],
             obs["discount_raw"],
             obs["detail_raw"],
+            obs.get("seller_name"),
             obs["source_url"],
             obs["crawled_at"],
             obs["crawler_version"],

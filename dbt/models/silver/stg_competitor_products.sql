@@ -12,6 +12,14 @@ cleaned AS (
         LOWER(TRIM(platform)) AS platform,
         TRIM(product_name) AS product_name,
 
+        CASE
+            WHEN raw_payload->>'data_source' = 'synthetic'
+                THEN 'synthetic'
+            WHEN raw_payload->>'data_source' = 'live'
+                THEN 'live'
+            ELSE 'unknown'
+        END AS data_source,
+
         price_raw,
         original_price_raw,
         discount_raw,

@@ -27,6 +27,31 @@ SELECTORS = {
         "a.product-link",
         "a[href]",
     ],
+    
+}
+
+BLIBLI_SELECTORS = {
+    "product_card": [
+        "a.elf-product-card[href*='/p/']",
+    ],
+    "product_name": [
+        ".els-product__title",
+    ],
+    "price": [
+        ".els-product__fixed-price",
+    ],
+    "original_price": [
+        ".els-product__discount-price",
+    ],
+    "discount": [
+        ".els-promo-label__text",
+    ],
+    "detail": [
+        ".els-product__seller-name",
+    ],
+    "product_link": [
+        "a[href*='/p/']",
+    ],
 }
 
 MIN_PARSE_SUCCESS_RATE = 0.80

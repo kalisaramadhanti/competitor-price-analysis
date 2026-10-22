@@ -12,6 +12,7 @@ class ProductRecord(BaseModel):
     original_price_raw: Optional[str] = None
     discount_raw: Optional[str] = None
     detail_raw: Optional[str] = None
+    seller_name: Optional[str] = None
 
     source_url: str = Field(min_length=1)
 
@@ -20,3 +21,4 @@ class ProductRecord(BaseModel):
     )
 
     crawler_version: str = "1.0.0"
+    data_source: str = "live"

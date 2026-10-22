@@ -25,6 +25,7 @@ def prepare_observation(product, html_hash):
         "original_price_raw": product.original_price_raw,
         "discount_raw": product.discount_raw,
         "detail_raw": product.detail_raw,
+        "seller_name": product.seller_name,
     }
 
     encoded = json.dumps(
